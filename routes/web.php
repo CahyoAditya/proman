@@ -10,6 +10,26 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+// Serve temporary export files from /tmp (needed on Vercel's read-only filesystem)
+Route::get('/export-tmp', function () {
+    $file = request('file');
+
+    // Security: only allow safe filenames (no path traversal)
+    if (!$file || !preg_match('/^[a-zA-Z0-9_\-]+\.xlsx$/', $file)) {
+        abort(404);
+    }
+
+    $path = '/tmp/' . $file;
+
+    if (!file_exists($path)) {
+        abort(404, 'Export file not found or expired.');
+    }
+
+    return response()->download($path, $file, [
+        'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    ])->deleteFileAfterSend(true);
+});
+
 // Protected Diagnostic Route to Test Database Connection on Vercel
 Route::get('/test-db', function () {
     if (request('secret') !== env('DEPLOY_SECRET_KEY', 'proman2026secret')) {

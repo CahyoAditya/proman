@@ -496,11 +496,18 @@ class ProjectBoard extends Page
         try {
             $fileName = 'tickets_'.($this->selectedProject?->name ?? 'export').'_'.now()->format('Y-m-d_H-i-s').'.xlsx';
             $fileName = Str::slug($fileName, '_').'.xlsx';
+
+            // Generate the Excel file in memory (no disk write needed)
             $export = new TicketsExport($tickets, $selectedColumns);
-            Excel::store($export, 'exports/'.$fileName, 'public');
-            $downloadUrl = asset('storage/exports/'.$fileName);
+            $excelContent = Excel::raw($export, \Maatwebsite\Excel\Excel::XLSX);
+
+            // Write to /tmp (writable on Vercel) for streaming
+            $tmpPath = '/tmp/'.$fileName;
+            file_put_contents($tmpPath, $excelContent);
+
+            // Trigger browser download via Livewire's stream
             $this->js("
-                fetch('{$downloadUrl}')
+                fetch('/export-tmp?file=".urlencode($fileName)."')
                     .then(response => response.blob())
                     .then(blob => {
                         const url = window.URL.createObjectURL(blob);
