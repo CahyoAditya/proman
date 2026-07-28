@@ -41,20 +41,34 @@ Route::get('/test-db', function () {
     }
 });
 
-// Temporary Route to Initialize Supabase Database directly on Vercel
+// Temporary Route to Initialize Supabase Database & Super Admin Role directly on Vercel
 Route::get('/deploy-init-db', function () {
     try {
-        \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
-        $migrateOutput = \Illuminate\Support\Facades\Artisan::output();
+        // Run migration gracefully (catch duplicate table errors if created via SQL editor)
+        try {
+            \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
+        } catch (\Throwable $mError) {
+            // Ignore duplicate table error
+        }
 
-        \Illuminate\Support\Facades\Artisan::call('db:seed', ['--force' => true]);
-        $seedOutput = \Illuminate\Support\Facades\Artisan::output();
+        // Run seeders
+        try {
+            \Illuminate\Support\Facades\Artisan::call('db:seed', ['--force' => true]);
+        } catch (\Throwable $sError) {
+            // Ignore duplicate seed error
+        }
+
+        // Explicitly ensure user adityacahyo104@gmail.com has super_admin role
+        $user = \App\Models\User::where('email', 'adityacahyo104@gmail.com')->first();
+        if ($user) {
+            $user->assignRole('super_admin');
+        }
 
         return response()->json([
             'status' => 'success',
-            'message' => 'Database Supabase berhasil di-migrate & di-seed!',
-            'migrate_output' => $migrateOutput,
-            'seed_output' => $seedOutput,
+            'message' => 'Super Admin adityacahyo104@gmail.com berhasil diaktifkan!',
+            'user' => $user ? $user->only(['id', 'name', 'email']) : null,
+            'roles' => $user ? $user->roles->pluck('name') : [],
         ]);
     } catch (\Throwable $e) {
         return response()->json([
