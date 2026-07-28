@@ -8,6 +8,7 @@ foreach ([
     '/tmp/laravel/storage/framework/cache/data',
     '/tmp/laravel/storage/app/public',
     '/tmp/laravel/storage/app/private',
+    '/tmp/laravel-excel',
 ] as $dir) {
     is_dir($dir) || mkdir($dir, 0755, true);
 }

@@ -50,6 +50,7 @@
     "APP_SERVICES_CACHE": "/tmp/services.php",
     "VIEW_COMPILED_PATH": "/tmp/views",
     "FILESYSTEM_ROOT_LOCAL": "/tmp/laravel/storage/app/private",
-    "FILESYSTEM_ROOT_PUBLIC": "/tmp/laravel/storage/app/public"
+    "FILESYSTEM_ROOT_PUBLIC": "/tmp/laravel/storage/app/public",
+    "EXCEL_LOCAL_PATH": "/tmp/laravel-excel"
   }
 }
