@@ -10,8 +10,12 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-// Diagnostic Route to Test Database Connection on Vercel
+// Protected Diagnostic Route to Test Database Connection on Vercel
 Route::get('/test-db', function () {
+    if (request('secret') !== env('DEPLOY_SECRET_KEY', 'proman2026secret')) {
+        abort(403, 'Unauthorized access to diagnostic route.');
+    }
+
     try {
         $pdo = DB::connection()->getPdo();
         $driver = DB::connection()->getDriverName();
@@ -41,8 +45,12 @@ Route::get('/test-db', function () {
     }
 });
 
-// Temporary Route to Initialize Supabase Database & Super Admin Role directly on Vercel
+// Protected Route to Initialize Supabase Database & Super Admin Role directly on Vercel
 Route::get('/deploy-init-db', function () {
+    if (request('secret') !== env('DEPLOY_SECRET_KEY', 'proman2026secret')) {
+        abort(403, 'Unauthorized access to database initialization route.');
+    }
+
     try {
         // Run migration gracefully (catch duplicate table errors if created via SQL editor)
         try {
