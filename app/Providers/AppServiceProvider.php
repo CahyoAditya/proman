@@ -10,6 +10,7 @@ use Filament\Pages\BasePage as Page;
 use Filament\Resources\Resource;
 use Filament\Widgets\Widget;
 use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Str;
 
 class AppServiceProvider extends ServiceProvider
@@ -31,11 +32,15 @@ class AppServiceProvider extends ServiceProvider
             URL::forceScheme('https');
         }
 
+        // Implicitly grant 'super_admin' role all permissions
+        Gate::before(function ($user, $ability) {
+            return $user->hasRole('super_admin') ? true : null;
+        });
+
         Livewire::component('edit-comment-modal', EditCommentModal::class);
         FilamentShield::buildPermissionKeyUsing(
             function (string $entity, string $affix, string $subject, string $case, string $separator) {
                 return match(true) {
-                    # if `configurePermissionIdentifierUsing()` was used previously, then this needs to be adjusted accordingly
                     is_subclass_of($entity, Resource::class) => Str::of($affix)
                         ->snake()
                         ->append('_')
