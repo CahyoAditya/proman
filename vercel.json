@@ -48,6 +48,8 @@
     "APP_PACKAGES_CACHE": "/tmp/packages.php",
     "APP_ROUTES_CACHE": "/tmp/routes.php",
     "APP_SERVICES_CACHE": "/tmp/services.php",
-    "VIEW_COMPILED_PATH": "/tmp/views"
+    "VIEW_COMPILED_PATH": "/tmp/views",
+    "FILESYSTEM_ROOT_LOCAL": "/tmp/laravel/storage/app/private",
+    "FILESYSTEM_ROOT_PUBLIC": "/tmp/laravel/storage/app/public"
   }
 }
