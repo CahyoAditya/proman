@@ -415,7 +415,7 @@ class ProjectBoard extends Page
         }
 
         return auth()->user()->hasRole(['super_admin'])
-            || $ticket->user_id === auth()->id()
+            || $ticket->created_by === auth()->id()
             || $ticket->assignees()->where('users.id', auth()->id())->exists();
     }
 
@@ -435,7 +435,7 @@ class ProjectBoard extends Page
         // 2. The ticket creator
         // 3. Assigned to the ticket
         return auth()->user()->hasRole(['super_admin'])
-            || $ticket->user_id === auth()->id()
+            || $ticket->created_by === auth()->id()
             || $ticket->assignees()->where('users.id', auth()->id())->exists();
     }
 
@@ -449,7 +449,7 @@ class ProjectBoard extends Page
         }
 
         return auth()->user()->hasRole(['super_admin'])
-            || $ticket->user_id === auth()->id()
+            || $ticket->created_by === auth()->id()
             || $ticket->assignees()->where('users.id', auth()->id())->exists();
     }
 

@@ -13,6 +13,8 @@ use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Str;
 
+use Illuminate\Support\Facades\DB;
+
 class AppServiceProvider extends ServiceProvider
 {
     /**
