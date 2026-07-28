@@ -2,7 +2,7 @@
     "private": true,
     "type": "module",
     "scripts": {
-        "build": "echo 'Using prebuilt assets'",
+        "build:local": "vite build",
         "dev": "vite"
     },
     "devDependencies": {
