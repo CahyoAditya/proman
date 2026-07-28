@@ -1,33 +1,38 @@
-FROM php:8.3-fpm
+FROM php:8.3-apache
 
-# Install dependencies
+# Install dependencies sistem & driver PostgreSQL (libpq-dev)
 RUN apt-get update && apt-get install -y \
     libpng-dev \
     libonig-dev \
     libxml2-dev \
     libicu-dev \
     libzip-dev \
+    libpq-dev \
     zip \
     unzip \
     git \
     curl
 
-# Clear cache
-RUN apt-get clean && rm -rf /var/lib/apt/lists/*
+# Install extension PHP (termasuk pdo_pgsql)
+RUN docker-php-ext-install pdo_pgsql pdo_mysql mbstring exif pcntl bcmath gd intl zip
 
-# Install PHP extensions
-RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd intl zip
+# Aktifkan mod_rewrite Apache untuk routing Laravel
+RUN a2enmod rewrite
 
-# Get latest Composer
+# Arahkan DocumentRoot Apache ke folder /public Laravel
+ENV APACHE_DOCUMENT_ROOT /var/www/html/public
+RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
+RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
+
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+WORKDIR /var/www/html
+COPY . /var/www/html
 
-# Set working directory
-WORKDIR /var/www
+# Install dependency composer (optimasi production)
+RUN composer install --no-dev --optimize-autoloader
 
-# Copy existing application directory permissions
-COPY --chown=www-data:www-data . /var/www
+# Atur hak akses folder storage dan cache
+RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 
-# Expose port 9000 for PHP-FPM
-EXPOSE 9000
-
-CMD ["php-fpm"]
+EXPOSE 80
+CMD ["apache2-foreground"]
