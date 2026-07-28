@@ -39,6 +39,7 @@
   ],
   "env": {
     "APP_ENV": "production",
+    "APP_DEBUG": "true",
     "SESSION_DRIVER": "database",
     "CACHE_STORE": "array",
     "APP_CONFIG_CACHE": "/tmp/config.php",
