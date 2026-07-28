@@ -1,5 +1,6 @@
 {
   "version": 2,
+  "buildCommand": "echo 'Assets pre-built'",
   "functions": {
     "api/index.php": {
       "runtime": "vercel-php@0.7.1"
@@ -9,6 +10,14 @@
     {
       "src": "/build/(.*)",
       "dest": "/public/build/$1"
+    },
+    {
+      "src": "/css/(.*)",
+      "dest": "/public/css/$1"
+    },
+    {
+      "src": "/js/(.*)",
+      "dest": "/public/js/$1"
     },
     {
       "src": "/favicon.ico",
